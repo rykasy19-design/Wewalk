@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Angka Hadiah</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #2563eb);
+      color: white;
+    }
+
+    .card {
+      width: min(94%, 560px);
+      padding: 30px 24px;
+      text-align: center;
+      border-radius: 28px;
+      background: rgba(255,255,255,.12);
+      backdrop-filter: blur(15px);
+      -webkit-backdrop-filter: blur(15px);
+      border: 1px solid rgba(255,255,255,.2);
+      box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    }
+
+    h1 {
+      font-size: 34px;
+      margin: 0 0 20px;
+      font-weight: 900;
+    }
+
+    .screen {
+      height: 230px;
+      border-radius: 22px;
+      background: rgba(0,0,0,.3);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      box-shadow: inset 0 0 35px rgba(0,0,0,.5);
+    }
+
+    #numbers {
+      font-size: 58px;
+      font-weight: 900;
+      line-height: 1.25;
+      padding: 18px;
+      word-spacing: 12px;
+      text-align: center;
+    }
+
+    #result {
+      position: absolute;
+      font-size: 105px;
+      font-weight: 1000;
+      display: none;
+      text-shadow: 0 5px 25px rgba(0,0,0,.5);
+    }
+
+    button {
+      margin-top: 24px;
+      width: 100%;
+      padding: 17px;
+      border: 0;
+      border-radius: 16px;
+      font-size: 21px;
+      font-weight: 900;
+      cursor: pointer;
+      background: white;
+      color: #111827;
+      box-shadow: 0 8px 20px rgba(0,0,0,.25);
+      transition: transform .15s, opacity .2s;
+    }
+
+    button:active { transform: scale(.98); }
+    button:disabled { opacity: .7; cursor: not-allowed; }
+
+    #wa {
+      display: none;
+      background: #25D366;
+      color: white;
+    }
+
+    .wa-number {
+      display: none;
+      margin-top: 12px;
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      opacity: .9;
+    }
+
+    .wa-number:hover { text-decoration: underline; }
+
+    @media (max-width: 480px) {
+      h1 { font-size: 28px; }
+      #numbers { font-size: 40px; }
+      #result { font-size: 85px; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="card">
+    <h1>🎁 ANGKA HADIAH</h1>
+
+    <div class="screen">
+      <div id="numbers"></div>
+      <div id="result"></div>
+    </div>
+
+    <button id="draw">UNDI SEKARANG</button>
+
+    <button id="wa">💬 CHAT HASIL KE WA</button>
+
+    <a
+      id="waNumber"
+      class="wa-number"
+      href="https://wa.me/6288293614364"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      📱 088293614364
+    </a>
+  </div>
+
+  <script>
+    const hadiah = [10, 15, 20, 25, 30];
+    const nomorWA = "6288293614364";
+
+    let hasil = null;
+    let busy = false;
+
+    const numbers = document.getElementById("numbers");
+    const result = document.getElementById("result");
+    const draw = document.getElementById("draw");
+    const wa = document.getElementById("wa");
+    const waNumber = document.getElementById("waNumber");
+
+    function acakBanyak() {
+      const angka = [];
+
+      for (let i = 0; i < 90; i++) {
+        angka.push(Math.floor(Math.random() * 100));
+      }
+
+      return angka.join("   ");
+    }
+
+    function undi() {
+      if (busy) return;
+
+      busy = true;
+      hasil = null;
+
+      result.style.display = "none";
+      wa.style.display = "none";
+      waNumber.style.display = "none";
+      numbers.style.display = "block";
+
+      draw.disabled = true;
+      draw.textContent = "MENGUNDI...";
+
+      let waktu = 0;
+
+      const timer = setInterval(() => {
+        numbers.textContent = acakBanyak();
+        waktu++;
+
+        if (waktu >= 18) {
+          clearInterval(timer);
+
+          hasil = hadiah[Math.floor(Math.random() * hadiah.length)];
+
+          numbers.style.display = "none";
+          result.textContent = hasil;
+          result.style.display = "block";
+
+          draw.disabled = false;
+          draw.textContent = "UNDI LAGI";
+
+          wa.style.display = "block";
+          waNumber.style.display = "inline-block";
+
+          busy = false;
+        }
+      }, 55);
+    }
+
+    function kirimWA() {
+      if (hasil === null) return;
+
+      const pesan = encodeURIComponent("gw dapet " + hasil);
+      const linkWA = "https://wa.me/" + nomorWA + "?text=" + pesan;
+
+      window.open(linkWA, "_blank", "noopener,noreferrer");
+    }
+
+    draw.addEventListener("click", undi);
+    wa.addEventListener("click", kirimWA);
+  </script>
+</body>
+</html>
